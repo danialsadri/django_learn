@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
-from .models import User
+from .models import User, Profile
 from .forms import UserCreationForm, UserChangeForm
 
 
@@ -24,3 +24,10 @@ class UserAdmin(BaseUserAdmin):
     add_fieldsets = (
         (None, {'fields': ('email', 'password1', 'password2', 'is_active', 'is_staff', 'is_superuser')}),
     )
+
+@admin.register(Profile)
+class ProfileAdmin(admin.ModelAdmin):
+    list_display = ['user', 'first_name', 'last_name']
+    list_filter = ['created_date', 'updated_date']
+    search_fields = ['first_name', 'last_name']
+    raw_id_fields = ['user']
