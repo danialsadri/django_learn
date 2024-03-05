@@ -9,7 +9,7 @@ ALLOWED_HOSTS = config('ALLOWED_HOSTS', cast=lambda v: [s.strip() for s in v.spl
 # Application definition 
 LOCAL_APPS = [
     'accounts.apps.AccountsConfig',
-    'blog.apps.BlogConfig',
+    # 'blog.apps.BlogConfig',
 ]
 
 INSTALLED_APPS = [
@@ -77,7 +77,7 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 # Internationalization
-LANGUAGE_CODE = 'fa-ir'
+LANGUAGE_CODE = 'en-US'
 TIME_ZONE = 'Asia/Tehran'
 USE_I18N = True
 USE_L10N = True
@@ -92,3 +92,6 @@ MEDIA_ROOT = BASE_DIR / 'media'
 
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# User Manager
+AUTH_USER_MODEL = 'accounts.User'
