@@ -1,8 +1,8 @@
 from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
-from django.views.generic import TemplateView, RedirectView, ListView, DetailView, FormView, CreateView
+from django.views.generic import TemplateView, RedirectView, ListView, DetailView, FormView, CreateView, UpdateView, DeleteView
 from .models import Post
-from .forms import PostForm
+from .forms import PostForm, PostUpdateForm
 
 
 class TestView(TemplateView):
@@ -17,7 +17,7 @@ class TestView(TemplateView):
 
 class RedirectToDjangoView(RedirectView):
     url = 'https://www.djangoproject.com/'
-    # pattern_name = 'blog:test'
+    # pattern_name = 'blog:post-list'
     permanent = False
     query_string = True
 
@@ -50,7 +50,7 @@ class PostFormView(FormView):
     model = Post
     form_class = PostForm
     template_name = 'post_form.html'
-    success_url = reverse_lazy('blog:test')
+    success_url = reverse_lazy('blog:post-list')
 
     def form_valid(self, form):
         form.instance.author = self.request.user
@@ -63,8 +63,21 @@ class PostCreateView(CreateView):
     form_class = PostForm
     # fields = ['title', 'content']
     template_name = 'post_create.html'
-    success_url = reverse_lazy('blog:test')
+    success_url = reverse_lazy('blog:post-list')
 
     def form_valid(self, form):
         form.instance.author = self.request.user
         return super().form_valid(form)
+
+
+class PostUpdateView(UpdateView):
+    model = Post
+    form_class = PostUpdateForm
+    template_name = 'post_update.html'
+    success_url = reverse_lazy('blog:post-list')
+
+
+class PostDeleteView(DeleteView):
+    model = Post
+    template_name = 'post_delete.html'
+    success_url = reverse_lazy('blog:post-list')

@@ -8,8 +8,11 @@
 <body>
     <h1>index page</h1>
     <h1>{{ name }}</h1>
+    <hr>
     {% for post in posts %}
         <p>{{ post.title }}</p>
+        <p>{{ post.content }}</p>
+        <hr>
     {% endfor %}
 </body>
 </html>

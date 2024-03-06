@@ -6,11 +6,15 @@
     <title>Document</title>
 </head>
 <body>
+<hr>
     {% for post in posts %}
         <div>
             <h2><a href="{% url 'blog:post-detail' post.id %}">{{ forloop.counter }}   {{ post.title }}</a></h2>
+            <a href="{% url 'blog:post-update' post.id %}">Edit</a>
+            <a href="{% url 'blog:post-delete' post.id %}">Delete</a>
             <p>{{ post.content }}</p>
         </div>
+        <hr>
     {% endfor %}
     <div class="pagination">
     <span class="step-links">
