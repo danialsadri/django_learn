@@ -1,7 +1,9 @@
 from django.db import models
 from django.contrib.auth import get_user_model
+from django.utils import timezone
 
 User = get_user_model()
+
 
 class Post(models.Model):
     author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='posts', blank=True, null=True)
@@ -12,7 +14,7 @@ class Post(models.Model):
     status = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_date = models.DateTimeField(auto_now=True)
-    published_date = models.DateTimeField()
+    published_date = models.DateTimeField(default=timezone.now())
 
     def __str__(self):
         return self.title[0:20]
@@ -20,7 +22,7 @@ class Post(models.Model):
 
 class Category(models.Model):
     name = models.CharField(max_length=100)
-    
+
     class Meta:
         verbose_name = 'category'
         verbose_name_plural = 'categories'

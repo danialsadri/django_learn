@@ -1,7 +1,9 @@
-from typing import Any
-from django.shortcuts import render, get_object_or_404
-from django.views.generic import TemplateView, RedirectView, ListView, DetailView
+from django.shortcuts import get_object_or_404
+from django.urls import reverse_lazy
+from django.views.generic import TemplateView, RedirectView, ListView, DetailView, FormView, CreateView
 from .models import Post
+from .forms import PostForm
+
 
 class TestView(TemplateView):
     template_name = 'index.html'
@@ -39,6 +41,30 @@ class PostListView(ListView):
 
 
 class PostDetailView(DetailView):
-    model = Post    
+    model = Post
     context_object_name = 'post'
     template_name = 'post_detail.html'
+
+
+class PostFormView(FormView):
+    model = Post
+    form_class = PostForm
+    template_name = 'post_form.html'
+    success_url = reverse_lazy('blog:test')
+
+    def form_valid(self, form):
+        form.instance.author = self.request.user
+        form.save()
+        return super().form_valid(form)
+
+
+class PostCreateView(CreateView):
+    model = Post
+    form_class = PostForm
+    # fields = ['title', 'content']
+    template_name = 'post_create.html'
+    success_url = reverse_lazy('blog:test')
+
+    def form_valid(self, form):
+        form.instance.author = self.request.user
+        return super().form_valid(form)
