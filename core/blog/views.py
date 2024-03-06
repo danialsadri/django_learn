@@ -3,7 +3,7 @@ from django.urls import reverse_lazy
 from django.views.generic import TemplateView, RedirectView, ListView, DetailView, FormView, CreateView, UpdateView, DeleteView
 from .models import Post
 from .forms import PostForm, PostUpdateForm
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 
 
 class TestView(TemplateView):
@@ -28,7 +28,8 @@ class RedirectToDjangoView(RedirectView):
         return super().get_redirect_url(*args, **kwargs)
 
 
-class PostListView(LoginRequiredMixin, ListView):
+class PostListView(PermissionRequiredMixin, LoginRequiredMixin, ListView):
+    permission_required = 'blog.view_post'
     model = Post
     # queryset = Post.objects.filter(status=True)
     template_name = 'post_list.html'
