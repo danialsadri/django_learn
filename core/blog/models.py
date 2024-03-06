@@ -11,7 +11,7 @@ class Post(models.Model):
     image = models.ImageField(upload_to='posts', blank=True, null=True)
     status = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
-    upldated_date = models.DateTimeField(auto_now=True)
+    updated_date = models.DateTimeField(auto_now=True)
     published_date = models.DateTimeField()
 
     def __str__(self):
