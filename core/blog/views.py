@@ -1,9 +1,9 @@
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
 from django.views.generic import TemplateView, RedirectView, ListView, DetailView, FormView, CreateView, UpdateView, DeleteView
-from .models import Post
 from .forms import PostForm, PostUpdateForm
-from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from .models import Post
 
 
 class TestView(TemplateView):
