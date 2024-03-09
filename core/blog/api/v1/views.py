@@ -11,6 +11,7 @@ from ...models import Post, Category
 from rest_framework.viewsets import ViewSet, ModelViewSet
 from rest_framework.decorators import action
 from ...permissions import IsOwnerOrReadOnly
+from ...paginations import DefaultPagination
 
 
 # =================================================================================================================
@@ -258,6 +259,10 @@ class PostModelViewSet(ModelViewSet):
     queryset = Post.objects.filter(status=True)
     serializer_class = PostDetailSerializer
     permission_classes = [IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
+    filterset_fields = {'author': ['exact', 'in'], 'category': ['exact', 'in'], 'status': ['exact']}
+    search_fields = ['title', 'content']
+    ordering_fields = ['created_at', 'updated_date', 'published_date']
+    pagination_class = DefaultPagination
 
     @action(methods=['get'], detail=False)
     def get_ok(self, request):

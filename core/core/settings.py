@@ -1,5 +1,8 @@
 from pathlib import Path
+from blog.permissions import IsAdminOrSuperUser
 from decouple import config
+from drf_yasg import openapi
+from drf_yasg.views import get_schema_view
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = config('SECRET_KEY', default='test')
@@ -14,6 +17,8 @@ LOCAL_APPS = [
 
 THIRD_PARTY_APPS = [
     'rest_framework',
+    'django_filters',
+    'drf_yasg',
 ]
 
 INSTALLED_APPS = [
@@ -103,7 +108,24 @@ AUTH_USER_MODEL = 'accounts.User'
 
 # Rest Framework
 REST_FRAMEWORK = {
-    'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.AllowAny',
-    ]
+    'DEFAULT_PERMISSION_CLASSES': ['rest_framework.permissions.AllowAny'],
+    'DEFAULT_FILTER_BACKENDS': [
+        'django_filters.rest_framework.DjangoFilterBackend',
+        'rest_framework.filters.SearchFilter',
+        'rest_framework.filters.OrderingFilter',
+    ],
 }
+
+# swagger
+schema_view = get_schema_view(
+    openapi.Info(
+        title='django learn project',
+        description='this is django learn project',
+        default_version='v1',
+        terms_of_service='https://www.google.com/',
+        contact=openapi.Contact(email='example.gmail.com'),
+        license=openapi.License(name='BSD License'),
+    ),
+    public=False,
+    permission_classes=[IsAdminOrSuperUser],
+)
