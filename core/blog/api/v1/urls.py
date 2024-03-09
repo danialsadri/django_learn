@@ -1,7 +1,12 @@
-from django.urls import path
+from django.urls import path, include
+from rest_framework import routers
 from . import views
 
 app_name = 'api-v1'
+router = routers.SimpleRouter()
+router.register('post-view-set', views.PostViewSet, basename='post_view_set')
+router.register('post-model-view-set', views.PostModelViewSet, basename='post_model_view_set')
+router.register('category-model-view-set', views.CategoryModelViewSet, basename='category_model_view_set')
 urlpatterns = [
     # fbv
     path('post-list/', views.post_list, name='post-list'),
@@ -18,4 +23,6 @@ urlpatterns = [
     # generic
     path('post-list-create-generic/', views.PostListCreateView.as_view(), name='post-list-create-generic'),
     path('post-retrieve-update-destroy-generic/<int:post_id>/', views.PostRetrieveUpdateDetailView.as_view(), name='post-retrieve-update-destroy-generic'),
+    # view set
+    path('', include(router.urls)),
 ]
