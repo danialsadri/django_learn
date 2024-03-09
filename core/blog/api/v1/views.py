@@ -1,7 +1,7 @@
 from django.shortcuts import get_object_or_404
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.generics import GenericAPIView, ListCreateAPIView, RetrieveUpdateDestroyAPIView
@@ -10,6 +10,7 @@ from .serializers import PostListSerializer, PostDetailSerializer, PostUpdateSer
 from ...models import Post, Category
 from rest_framework.viewsets import ViewSet, ModelViewSet
 from rest_framework.decorators import action
+from ...permissions import IsOwnerOrReadOnly
 
 
 # =================================================================================================================
@@ -210,6 +211,8 @@ class PostRetrieveUpdateDetailView(RetrieveUpdateDestroyAPIView):
     def get_object(self):
         pk = self.kwargs.get('post_id')
         return get_object_or_404(Post, id=pk, status=True)
+
+
 # =================================================================================================================
 class PostViewSet(ViewSet):
     queryset = Post.objects.filter(status=True)
@@ -254,11 +257,12 @@ class PostViewSet(ViewSet):
 class PostModelViewSet(ModelViewSet):
     queryset = Post.objects.filter(status=True)
     serializer_class = PostDetailSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
 
     @action(methods=['get'], detail=False)
     def get_ok(self, request):
-        return Response(data={'message':'ok'})
+        return Response(data={'message': 'ok'})
+
 
 # =================================================================================================================
 class CategoryModelViewSet(ModelViewSet):

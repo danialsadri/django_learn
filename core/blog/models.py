@@ -1,4 +1,5 @@
 from django.db import models
+from django.urls import reverse
 from django.utils import timezone
 
 
@@ -15,6 +16,12 @@ class Post(models.Model):
 
     def __str__(self):
         return self.title[0:20]
+
+    def get_snippet(self):
+        return self.content[0:5]
+
+    def get_absolute_api_url(self):
+        return reverse('blog:api-v1:post_model_view_set-detail', kwargs={'pk': self.id})
 
 
 class Category(models.Model):
