@@ -1,7 +1,10 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
-from .models import User, Profile
+from rest_framework.authtoken.admin import TokenAdmin
 from .forms import UserCreationForm, UserChangeForm
+from .models import User, Profile
+
+TokenAdmin.raw_id_fields = ['user']
 
 
 @admin.register(User)
@@ -13,7 +16,7 @@ class UserAdmin(BaseUserAdmin):
     list_filter = ['is_active', 'is_staff', 'is_superuser']
     search_fields = ['email']
     ordering = ['email']
-    
+
     fieldsets = (
         ('Informations', {'fields': ('email', 'password')}),
         ('Permissions', {'fields': ['is_active', 'is_staff', 'is_superuser']}),
@@ -24,6 +27,7 @@ class UserAdmin(BaseUserAdmin):
     add_fieldsets = (
         (None, {'fields': ('email', 'password1', 'password2', 'is_active', 'is_staff', 'is_superuser')}),
     )
+
 
 @admin.register(Profile)
 class ProfileAdmin(admin.ModelAdmin):

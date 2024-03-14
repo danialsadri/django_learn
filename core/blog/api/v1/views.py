@@ -258,7 +258,7 @@ class PostViewSet(ViewSet):
 class PostModelViewSet(ModelViewSet):
     queryset = Post.objects.filter(status=True)
     serializer_class = PostDetailSerializer
-    permission_classes = [IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
+    permission_classes = [IsAuthenticated, IsOwnerOrReadOnly]
     filterset_fields = {'author': ['exact', 'in'], 'category': ['exact', 'in'], 'status': ['exact']}
     search_fields = ['title', 'content']
     ordering_fields = ['created_at', 'updated_date', 'published_date']
