@@ -3,8 +3,7 @@ from django.contrib.auth.password_validation import validate_password
 from django.core import exceptions
 from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
-
-from ...models import User
+from ...models import User, Profile
 
 
 class RegisterApiSerializer(serializers.ModelSerializer):
@@ -69,3 +68,11 @@ class PasswordChangeSerializer(serializers.Serializer):
         except exceptions.ValidationError as e:
             raise serializers.ValidationError({'new_password1': list(e.messages)})
         return super().validate(attrs)
+
+
+class ProfileApiSerializer(serializers.ModelSerializer):
+    email = serializers.CharField(source='user.email', read_only=True)
+
+    class Meta:
+        model = Profile
+        fields = ['first_name', 'last_name', 'email', 'image', 'description']

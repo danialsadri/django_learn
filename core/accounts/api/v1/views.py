@@ -1,13 +1,17 @@
 from django.contrib.auth import get_user_model
+from django.shortcuts import get_object_or_404
 from rest_framework import status
 from rest_framework.authtoken.models import Token
 from rest_framework.authtoken.views import ObtainAuthToken
-from rest_framework.generics import UpdateAPIView, GenericAPIView
+from rest_framework.generics import GenericAPIView, RetrieveUpdateAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.views import TokenObtainPairView
-from .serializers import RegisterApiSerializer, CustomAuthTokenSerializer, CustomTokenObtainPairSerializer, PasswordChangeSerializer
+from .serializers import (RegisterApiSerializer, CustomAuthTokenSerializer,
+                          CustomTokenObtainPairSerializer, PasswordChangeSerializer,
+                          ProfileApiSerializer)
+from ...models import Profile
 
 User = get_user_model()
 
@@ -69,3 +73,14 @@ class ChangePasswordApiView(GenericAPIView):
             user_object.save()
             return Response(data={'message': 'successfully password changed'}, status=status.HTTP_200_OK)
         return Response(data={'message': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ProfileApiView(RetrieveUpdateAPIView):
+    queryset = Profile.objects.all()
+    serializer_class = ProfileApiSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_object(self):
+        queryset = self.get_queryset()
+        obj = get_object_or_404(queryset, user=self.request.user)
+        return obj

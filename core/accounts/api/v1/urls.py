@@ -12,4 +12,5 @@ urlpatterns = [
     path('jwt/refresh/', TokenRefreshView.as_view(), name='jwt-refresh'),
     path('jwt/verify/', TokenVerifyView.as_view(), name='jwt-verify'),
     path('password-change/', views.ChangePasswordApiView.as_view(), name='password-change'),
+    path('profile/', views.ProfileApiView.as_view(), name='profile'),
 ]
