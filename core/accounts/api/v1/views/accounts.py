@@ -17,11 +17,11 @@ from ..serializers import (RegisterApiSerializer, CustomAuthTokenSerializer,
 User = get_user_model()
 
 
-class RegisterApiView(GenericAPIView):
+class RegisterApiView(APIView):
     serializer_class = RegisterApiSerializer
 
     def post(self, request):
-        serializer = self.get_serializer(data=request.data)
+        serializer = self.serializer_class(data=request.data)
         if serializer.is_valid():
             email = serializer.validated_data.get('email')
             serializer.save()
