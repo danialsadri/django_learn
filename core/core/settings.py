@@ -6,7 +6,6 @@ from drf_yasg.views import get_schema_view
 from rest_framework.permissions import AllowAny
 from datetime import timedelta
 
-
 BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = config('SECRET_KEY', default='test')
 DEBUG = config('DEBUG', cast=bool, default=True)
@@ -24,6 +23,7 @@ THIRD_PARTY_APPS = [
     'rest_framework_simplejwt',
     'django_filters',
     'drf_yasg',
+    'mail_templated',
 ]
 
 INSTALLED_APPS = [
@@ -181,3 +181,11 @@ SIMPLE_JWT = {
     "SLIDING_TOKEN_OBTAIN_SERIALIZER": "rest_framework_simplejwt.serializers.TokenObtainSlidingSerializer",
     "SLIDING_TOKEN_REFRESH_SERIALIZER": "rest_framework_simplejwt.serializers.TokenRefreshSlidingSerializer",
 }
+
+# Email Backend
+EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+EMAIL_HOST = ''
+EMAIL_USE_TLS = True
+EMAIL_PORT = 587
+EMAIL_HOST_USER = ''
+EMAIL_HOST_PASSWORD = ''

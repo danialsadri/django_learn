@@ -1,9 +1,9 @@
+from accounts.models import User
 from django.contrib.auth import authenticate
 from django.contrib.auth.password_validation import validate_password
 from django.core import exceptions
 from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
-from ...models import User, Profile
 
 
 class RegisterApiSerializer(serializers.ModelSerializer):
@@ -40,6 +40,8 @@ class CustomAuthTokenSerializer(serializers.Serializer):
             user = authenticate(request=self.context.get('request'), username=email, password=password)
             if not user:
                 raise serializers.ValidationError('Unable to log in with provided credentials.', code='authorization')
+            if not user.is_verified:
+                raise serializers.ValidationError('user is not verified')
         else:
             raise serializers.ValidationError('Must include email and password.', code='authorization')
 
@@ -50,6 +52,8 @@ class CustomAuthTokenSerializer(serializers.Serializer):
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
     def validate(self, attrs):
         validate_data = super().validate(attrs)
+        if not self.user.is_verified:
+            raise serializers.ValidationError('user is not verified')
         validate_data['email'] = self.user.email
         validate_data['user_id'] = self.user.id
         return validate_data
@@ -68,11 +72,3 @@ class PasswordChangeSerializer(serializers.Serializer):
         except exceptions.ValidationError as e:
             raise serializers.ValidationError({'new_password1': list(e.messages)})
         return super().validate(attrs)
-
-
-class ProfileApiSerializer(serializers.ModelSerializer):
-    email = serializers.CharField(source='user.email', read_only=True)
-
-    class Meta:
-        model = Profile
-        fields = ['first_name', 'last_name', 'email', 'image', 'description']
