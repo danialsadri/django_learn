@@ -23,12 +23,28 @@ class RegisterApiView(GenericAPIView):
     def post(self, request):
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid():
+            email = serializer.validated_data.get('email')
             serializer.save()
-            data = {
-                'email': serializer.validated_data.get('email'),
-            }
-            return Response(data=data, status=status.HTTP_201_CREATED)
+            user_object = get_object_or_404(User, email=email)
+            token = self.get_token_for_user(user_object)
+            email_object = EmailMessage(
+                template_name='send_email/activation_email.html',
+                context={'token': token},
+                from_email='admin@gmail.com',
+                to=[email],
+            )
+            send_email_thread(email_object)
+            return Response(data={'email': email}, status=status.HTTP_201_CREATED)
         return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def get_token_for_user(self, user):
+        refresh = RefreshToken.for_user(user)
+        return str(refresh.access_token)
+
+
+class ActivationConfirmApiView(APIView):
+    def get(self, request, token):
+        return Response('ok')
 
 
 class CustomObtainAuthToken(ObtainAuthToken):
@@ -74,22 +90,3 @@ class ChangePasswordApiView(GenericAPIView):
             user_object.save()
             return Response(data={'message': 'successfully password changed'}, status=status.HTTP_200_OK)
         return Response(data={'message': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
-
-
-class TestEmailApiView(GenericAPIView):
-    def get(self, request):
-        self.email = 'danielsadri01@gmail.com'
-        user_object = get_object_or_404(User, email=self.email)
-        token = self.get_token_for_user(user_object)
-        email_object = EmailMessage(
-            template_name='send_email/send_email.html',
-            context={'token': token},
-            from_email='admin@gmail.com',
-            to=[self.email],
-        )
-        send_email_thread(email_object)
-        return Response(data='send email')
-
-    def get_token_for_user(self, user):
-        refresh = RefreshToken.for_user(user)
-        return str(refresh.access_token)
