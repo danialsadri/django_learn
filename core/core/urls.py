@@ -5,14 +5,22 @@ from . import settings
 
 urlpatterns = [
     # apps
-    path('admin/', admin.site.urls),
-    path('blog/', include('blog.urls', namespace='blog')),
-    path('accounts/', include('accounts.urls', namespace='accounts')),
+    path("admin/", admin.site.urls),
+    path("blog/", include("blog.urls", namespace="blog")),
+    path("accounts/", include("accounts.urls", namespace="accounts")),
     # login with rest-framework
-    path('api-login/', include('rest_framework.urls')),
+    path("api-login/", include("rest_framework.urls")),
     # swagger
-    path('swagger/', settings.schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
-    path('swagger/output.json/', settings.schema_view.without_ui(cache_timeout=0), name='schema-json'),
+    path(
+        "swagger/",
+        settings.schema_view.with_ui("swagger", cache_timeout=0),
+        name="schema-swagger-ui",
+    ),
+    path(
+        "swagger/output.json/",
+        settings.schema_view.without_ui(cache_timeout=0),
+        name="schema-json",
+    ),
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

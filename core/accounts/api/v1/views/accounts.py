@@ -14,9 +14,13 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenObtainPairView
-from ..serializers import (RegisterApiSerializer, CustomAuthTokenSerializer,
-                           CustomTokenObtainPairSerializer, PasswordChangeSerializer,
-                           ActivationResendApiSerializer)
+from ..serializers import (
+    RegisterApiSerializer,
+    CustomAuthTokenSerializer,
+    CustomTokenObtainPairSerializer,
+    PasswordChangeSerializer,
+    ActivationResendApiSerializer,
+)
 
 User = get_user_model()
 
@@ -27,18 +31,18 @@ class RegisterApiView(GenericAPIView):
     def post(self, request):
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid():
-            email = serializer.validated_data.get('email')
+            email = serializer.validated_data.get("email")
             serializer.save()
             user_object = get_object_or_404(User, email=email)
             token = self.get_token_for_user(user_object)
             email_object = EmailMessage(
-                template_name='send_email/activation_email.html',
-                context={'token': token},
-                from_email='admin@gmail.com',
+                template_name="send_email/activation_email.html",
+                context={"token": token},
+                from_email="admin@gmail.com",
                 to=[email],
             )
             send_email_thread(email_object)
-            return Response(data={'email': email}, status=status.HTTP_201_CREATED)
+            return Response(data={"email": email}, status=status.HTTP_201_CREATED)
         return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def get_token_for_user(self, user):
@@ -49,18 +53,27 @@ class RegisterApiView(GenericAPIView):
 class ActivationConfirmApiView(APIView):
     def get(self, request, token):
         try:
-            token = jwt.decode(token, settings.SECRET_KEY, algorithms=['HS256'])
+            token = jwt.decode(token, settings.SECRET_KEY, algorithms=["HS256"])
         except ExpiredSignatureError:
-            return Response({'message': 'Token has been expired'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {"message": "Token has been expired"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
         except InvalidSignatureError:
-            return Response({'message': 'Token is not valid'}, status=status.HTTP_400_BAD_REQUEST)
-        user_id = token.get('user_id')
+            return Response(
+                {"message": "Token is not valid"}, status=status.HTTP_400_BAD_REQUEST
+            )
+        user_id = token.get("user_id")
         user_object = get_object_or_404(User, pk=user_id)
         if user_object.is_verified:
-            return Response({'message': 'your account has already been verified'})
+            return Response({"message": "your account has already been verified"})
         user_object.is_verified = True
         user_object.save()
-        return Response(data={'message': 'your account have been verified and activated successfully'})
+        return Response(
+            data={
+                "message": "your account have been verified and activated successfully"
+            }
+        )
 
 
 class ActivationResendApiView(GenericAPIView):
@@ -69,16 +82,19 @@ class ActivationResendApiView(GenericAPIView):
     def post(self, request):
         serializer = ActivationResendApiSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        user_object = serializer.validated_data['user']
+        user_object = serializer.validated_data["user"]
         token = self.get_token_for_user(user_object)
         email_object = EmailMessage(
-            template_name='send_email/activation_email.html',
-            context={'token': token},
-            from_email='admin@gmail.com',
+            template_name="send_email/activation_email.html",
+            context={"token": token},
+            from_email="admin@gmail.com",
             to=[user_object.email],
         )
         send_email_thread(email_object)
-        return Response(data={'message': 'user activation resend successfully'}, status=status.HTTP_200_OK)
+        return Response(
+            data={"message": "user activation resend successfully"},
+            status=status.HTTP_200_OK,
+        )
 
     def get_token_for_user(self, user):
         refresh = RefreshToken.for_user(user)
@@ -89,14 +105,16 @@ class CustomObtainAuthToken(ObtainAuthToken):
     serializer_class = CustomAuthTokenSerializer
 
     def post(self, request, *args, **kwargs):
-        serializer = self.serializer_class(data=request.data, context={'request': request})
+        serializer = self.serializer_class(
+            data=request.data, context={"request": request}
+        )
         serializer.is_valid(raise_exception=True)
-        user = serializer.validated_data['user']
+        user = serializer.validated_data["user"]
         token, created = Token.objects.get_or_create(user=user)
         context = {
-            'token': token.key,
-            'user_id': user.pk,
-            'email': user.email,
+            "token": token.key,
+            "user_id": user.pk,
+            "email": user.email,
         }
         return Response(context)
 
@@ -122,9 +140,17 @@ class ChangePasswordApiView(GenericAPIView):
         user_object = self.request.user
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid():
-            if not user_object.check_password(serializer.data.get('old_password')):
-                return Response(data={'old_password': 'wrong password'}, status=status.HTTP_400_BAD_REQUEST)
-            user_object.set_password(serializer.data.get('new_password1'))
+            if not user_object.check_password(serializer.data.get("old_password")):
+                return Response(
+                    data={"old_password": "wrong password"},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            user_object.set_password(serializer.data.get("new_password1"))
             user_object.save()
-            return Response(data={'message': 'successfully password changed'}, status=status.HTTP_200_OK)
-        return Response(data={'message': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                data={"message": "successfully password changed"},
+                status=status.HTTP_200_OK,
+            )
+        return Response(
+            data={"message": serializer.errors}, status=status.HTTP_400_BAD_REQUEST
+        )

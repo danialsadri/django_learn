@@ -3,7 +3,7 @@ def make_activation(model_admin, request, queryset):
     model_admin.message_user(request, f"{result} Posts ware accepted")
 
 
-make_activation.short_description = 'تایید پست'
+make_activation.short_description = "تایید پست"
 
 
 def make_deactivation(model_admin, request, queryset):

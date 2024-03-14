@@ -4,9 +4,25 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.generics import GenericAPIView, ListCreateAPIView, RetrieveUpdateDestroyAPIView
-from rest_framework.mixins import ListModelMixin, CreateModelMixin, RetrieveModelMixin, UpdateModelMixin, DestroyModelMixin
-from .serializers import PostListSerializer, PostDetailSerializer, PostUpdateSerializer, PostCreateSerializer, CategorySerializer
+from rest_framework.generics import (
+    GenericAPIView,
+    ListCreateAPIView,
+    RetrieveUpdateDestroyAPIView,
+)
+from rest_framework.mixins import (
+    ListModelMixin,
+    CreateModelMixin,
+    RetrieveModelMixin,
+    UpdateModelMixin,
+    DestroyModelMixin,
+)
+from .serializers import (
+    PostListSerializer,
+    PostDetailSerializer,
+    PostUpdateSerializer,
+    PostCreateSerializer,
+    CategorySerializer,
+)
 from ...models import Post, Category
 from rest_framework.viewsets import ViewSet, ModelViewSet
 from rest_framework.decorators import action
@@ -15,7 +31,7 @@ from ...paginations import DefaultPagination
 
 
 # =================================================================================================================
-@api_view(['GET'])
+@api_view(["GET"])
 @permission_classes([IsAuthenticated])
 def post_list(request):
     posts = Post.objects.filter(status=True)
@@ -23,7 +39,7 @@ def post_list(request):
     return Response(data=serializer.data, status=status.HTTP_200_OK)
 
 
-@api_view(['GET'])
+@api_view(["GET"])
 @permission_classes([IsAuthenticated])
 def post_detail(request, pk):
     post = get_object_or_404(Post, id=pk, status=True)
@@ -31,7 +47,7 @@ def post_detail(request, pk):
     return Response(data=serializer.data, status=status.HTTP_200_OK)
 
 
-@api_view(['POST'])
+@api_view(["POST"])
 @permission_classes([IsAuthenticated])
 def post_create(request):
     serializer = PostCreateSerializer(data=request.data)
@@ -40,7 +56,7 @@ def post_create(request):
     return Response(data=serializer.data, status=status.HTTP_201_CREATED)
 
 
-@api_view(['PATCH'])
+@api_view(["PATCH"])
 @permission_classes([IsAuthenticated])
 def post_update(request, pk):
     post = get_object_or_404(Post, id=pk, status=True)
@@ -50,12 +66,14 @@ def post_update(request, pk):
     return Response(data=serializer.data, status=status.HTTP_202_ACCEPTED)
 
 
-@api_view(['DELETE'])
+@api_view(["DELETE"])
 @permission_classes([IsAuthenticated])
 def post_delete(request, pk):
     post = get_object_or_404(Post, id=pk, status=True)
     post.delete()
-    return Response({'message': 'item removed successfully'}, status=status.HTTP_204_NO_CONTENT)
+    return Response(
+        {"message": "item removed successfully"}, status=status.HTTP_204_NO_CONTENT
+    )
 
 
 # =================================================================================================================
@@ -99,7 +117,9 @@ class PostUpdateView(APIView):
 
     def patch(self, request, pk):
         post = get_object_or_404(Post, id=pk, status=True)
-        serializer = self.serializer_class(instance=post, data=request.data, partial=True)
+        serializer = self.serializer_class(
+            instance=post, data=request.data, partial=True
+        )
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(data=serializer.data, status=status.HTTP_202_ACCEPTED)
@@ -112,7 +132,9 @@ class PostDeleteView(APIView):
     def delete(self, request, pk):
         post = get_object_or_404(Post, id=pk, status=True)
         post.delete()
-        return Response({'message': 'item removed successfully'}, status=status.HTTP_204_NO_CONTENT)
+        return Response(
+            {"message": "item removed successfully"}, status=status.HTTP_204_NO_CONTENT
+        )
 
 
 # =================================================================================================================
@@ -206,11 +228,11 @@ class PostListCreateView(ListCreateAPIView):
 class PostRetrieveUpdateDetailView(RetrieveUpdateDestroyAPIView):
     serializer_class = PostDetailSerializer
     permission_classes = [IsAuthenticated]
-    lookup_field = 'id'
-    lookup_url_kwarg = 'post_id'
+    lookup_field = "id"
+    lookup_url_kwarg = "post_id"
 
     def get_object(self):
-        pk = self.kwargs.get('post_id')
+        pk = self.kwargs.get("post_id")
         return get_object_or_404(Post, id=pk, status=True)
 
 
@@ -244,7 +266,9 @@ class PostViewSet(ViewSet):
 
     def partial_update(self, request, pk=None):
         queryset = get_object_or_404(Post, id=pk, status=True)
-        serializer = self.serializer_class(instance=queryset, data=request.data, partial=True)
+        serializer = self.serializer_class(
+            instance=queryset, data=request.data, partial=True
+        )
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(data=serializer.data, status=status.HTTP_202_ACCEPTED)
@@ -252,21 +276,28 @@ class PostViewSet(ViewSet):
     def destroy(self, request, pk=None):
         queryset = get_object_or_404(Post, id=pk, status=True)
         queryset.delete()
-        return Response(data={'message': 'item removed successfully'}, status=status.HTTP_204_NO_CONTENT)
+        return Response(
+            data={"message": "item removed successfully"},
+            status=status.HTTP_204_NO_CONTENT,
+        )
 
 
 class PostModelViewSet(ModelViewSet):
     queryset = Post.objects.filter(status=True)
     serializer_class = PostDetailSerializer
     permission_classes = [IsAuthenticated, IsOwnerOrReadOnly]
-    filterset_fields = {'author': ['exact', 'in'], 'category': ['exact', 'in'], 'status': ['exact']}
-    search_fields = ['title', 'content']
-    ordering_fields = ['created_at', 'updated_date', 'published_date']
+    filterset_fields = {
+        "author": ["exact", "in"],
+        "category": ["exact", "in"],
+        "status": ["exact"],
+    }
+    search_fields = ["title", "content"]
+    ordering_fields = ["created_at", "updated_date", "published_date"]
     pagination_class = DefaultPagination
 
-    @action(methods=['get'], detail=False)
+    @action(methods=["get"], detail=False)
     def get_ok(self, request):
-        return Response(data={'message': 'ok'})
+        return Response(data={"message": "ok"})
 
 
 # =================================================================================================================

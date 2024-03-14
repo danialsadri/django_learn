@@ -2,7 +2,7 @@ from rest_framework.permissions import BasePermission, SAFE_METHODS
 
 
 class IsOwnerOrReadOnly(BasePermission):
-    message = 'دسترسی نداری که این پست رو تغییر بدی'
+    message = "دسترسی نداری که این پست رو تغییر بدی"
 
     def has_object_permission(self, request, view, obj):
         if request.method in SAFE_METHODS:
@@ -11,7 +11,12 @@ class IsOwnerOrReadOnly(BasePermission):
 
 
 class IsAdminOrSuperUser(BasePermission):
-    message = '...'
+    message = "..."
 
     def has_permission(self, request, view):
-        return bool(request.user and request.user.is_staff or request.user and request.user.is_superuser)
+        return bool(
+            request.user
+            and request.user.is_staff
+            or request.user
+            and request.user.is_superuser
+        )
