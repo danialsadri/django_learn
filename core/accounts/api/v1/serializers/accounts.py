@@ -2,6 +2,7 @@ from accounts.models import User
 from django.contrib.auth import authenticate
 from django.contrib.auth.password_validation import validate_password
 from django.core import exceptions
+from django.shortcuts import get_object_or_404
 from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
@@ -25,6 +26,21 @@ class RegisterApiSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         validated_data.pop('password2')
         return User.objects.create_user(**validated_data)
+
+
+class ActivationResendApiSerializer(serializers.Serializer):
+    email = serializers.EmailField(required=True)
+
+    def validate(self, attrs):
+        email = attrs.get('email')
+        try:
+            user_object = User.objects.get(email=email)
+        except User.DoesNotExist:
+            raise serializers.ValidationError({'message': 'user does not exist'})
+        if user_object.is_verified:
+            return serializers.ValidationError({'message': 'user is already activated and verified'})
+        attrs['user'] = user_object
+        return super().validate(attrs)
 
 
 class CustomAuthTokenSerializer(serializers.Serializer):
