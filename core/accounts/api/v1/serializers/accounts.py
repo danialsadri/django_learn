@@ -38,7 +38,7 @@ class ActivationResendApiSerializer(serializers.Serializer):
         except User.DoesNotExist:
             raise serializers.ValidationError({"message": "user does not exist"})
         if user_object.is_verified:
-            return serializers.ValidationError(
+            raise serializers.ValidationError(
                 {"message": "user is already activated and verified"}
             )
         attrs["user"] = user_object
