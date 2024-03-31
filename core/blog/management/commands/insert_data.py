@@ -15,17 +15,13 @@ class Command(BaseCommand):
         self.fake = Faker()
 
     def handle(self, *args, **options):
-        user = User.objects.create_user(email=self.fake.email(), password="Test@123456")
+        user = User.objects.get(email='danielsadri01@gmail.com')
         profile = Profile.objects.get(user=user)
-        profile.first_name = self.fake.first_name()
-        profile.last_name = self.fake.last_name()
-        profile.description = self.fake.paragraph(nb_sentences=5)
-        profile.save()
 
         for name in category_list:
             Category.objects.get_or_create(name=name)
 
-        for _ in range(10):
+        for _ in range(5):
             Post.objects.create(
                 author=profile,
                 category=Category.objects.get(name=choice(category_list)),
