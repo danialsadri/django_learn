@@ -27,6 +27,7 @@ THIRD_PARTY_APPS = [
     "drf_yasg",
     "mail_templated",
     "corsheaders",
+    "django_celery_beat",
 ]
 
 INSTALLED_APPS = [
@@ -193,3 +194,26 @@ CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1:5500",
     "http://localhost:5500"
 ]
+
+# CELERY_BROKER_URL
+CELERY_BROKER_URL = "redis://redis:6379/1"
+
+# django celery beat
+# CELERY_BEAT_SCHEDULE = {
+#     'send_email': {
+#         'task': 'blog.tasks.send_email',
+#         'schedule': 5,
+#     }
+# }
+
+# caching configs
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://redis:6379/2",
+        "TIMEOUT": 60,
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        }
+    }
+}

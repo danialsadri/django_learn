@@ -4,7 +4,7 @@ services:
   backend:
     container_name: backend
     image: backend
-    build: 
+    build:
       context: .
       dockerfile: Dockerfile
     command: sh -c "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
@@ -16,3 +16,42 @@ services:
       - SECRET_KEY=test
       - DEBUG=True
       - ALLOWED_HOSTS=localhost,127.0.0.1
+    depends_on:
+      - redis
+    restart: on-failure
+
+  redis:
+    container_name: redis
+    image: redis
+    ports:
+      - "6379:6379"
+    command: sh -c "redis-server --save 60 1 --loglevel warning"
+    restart: always
+
+  worker:
+    container_name: worker
+    image: worker
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: sh -c "celery -A core worker -l INFO"
+    volumes:
+      - ./core:/app
+    depends_on:
+      - backend
+      - redis
+    restart: on-failure
+
+  worker_beat:
+    container_name: worker_beat
+    image: worker_beat
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: sh -c "celery -A core beat -l INFO --scheduler django_celery_beat.schedulers:DatabaseScheduler"
+    volumes:
+      - ./core:/app
+    depends_on:
+      - backend
+      - redis
+    restart: on-failure
