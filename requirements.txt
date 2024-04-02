@@ -31,6 +31,7 @@ Flask-Login==0.6.3
 gevent==24.2.1
 geventhttpclient==2.0.12
 greenlet==3.0.3
+gunicorn==21.2.0
 idna==3.6
 inflection==0.5.1
 iniconfig==2.0.0

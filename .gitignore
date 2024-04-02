@@ -1,4 +1,6 @@
 ### Django ###
+/core/media
+/core/static
 *.log
 *.pot
 *.pyc
