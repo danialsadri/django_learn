@@ -1,5 +1,7 @@
+import requests
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
-from django.http import HttpResponse
+from django.core.cache import cache
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
 from django.views.generic import (
@@ -99,3 +101,11 @@ class PostDeleteView(LoginRequiredMixin, DeleteView):
 def send_email_test(request):
     send_email.delay()
     return HttpResponse('<h1>Done Sending Email</h1>')
+
+
+def cache_test(request):
+    if cache.get('test_api') is None:
+        response = requests.get("https://9e1b6e60-172e-4f0c-8501-173a2ed854c6.mock.pstmn.io/test/delay/5").json()
+        cache.set('test_api', response)
+        return JsonResponse(cache.get('test_api'))
+    return JsonResponse(cache.get('test_api'))
