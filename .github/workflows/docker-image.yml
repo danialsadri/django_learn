@@ -1,8 +1,6 @@
 name: Django Project
 
 on:
-  push:
-    branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
 
@@ -12,4 +10,4 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: Setup Docker Compose
-      run: docker-compose up -d --build
+      run: docker compose -f docker-compose-production.yml up  --build -d
