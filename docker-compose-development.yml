@@ -7,7 +7,11 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    command: sh -c "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
+    command: >
+      sh -c "python manage.py makemigrations &&
+      python manage.py migrate &&
+      python manage.py collectstatic --no-input &&
+      python manage.py runserver 0.0.0.0:8000"
     volumes:
       - ./core:/app
     ports:
@@ -18,7 +22,7 @@ services:
       - ALLOWED_HOSTS=localhost,127.0.0.1
     depends_on:
       - redis
-    restart: on-failure
+    restart: always
 
   redis:
     container_name: redis
@@ -40,7 +44,7 @@ services:
     depends_on:
       - backend
       - redis
-    restart: on-failure
+    restart: always
 
   worker_beat:
     container_name: worker_beat
@@ -54,4 +58,4 @@ services:
     depends_on:
       - backend
       - redis
-    restart: on-failure
+    restart: always
