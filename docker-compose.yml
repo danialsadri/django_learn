@@ -35,6 +35,22 @@ services:
       context: .
       dockerfile: Dockerfile
     command: sh -c "celery -A core worker -l INFO"
+    volumes:
+      - ./core:/app
+    depends_on:
+      - backend
+      - redis
+    restart: on-failure
+
+  worker_beat:
+    container_name: worker_beat
+    image: worker_beat
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: sh -c "celery -A core beat -l INFO --scheduler django_celery_beat.schedulers:DatabaseScheduler"
+    volumes:
+      - ./core:/app
     depends_on:
       - backend
       - redis

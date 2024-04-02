@@ -1,4 +1,5 @@
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
 from django.views.generic import (
@@ -13,6 +14,7 @@ from django.views.generic import (
 )
 from .forms import PostForm, PostUpdateForm
 from .models import Post
+from .tasks import send_email
 
 
 class TestView(TemplateView):
@@ -92,3 +94,8 @@ class PostDeleteView(LoginRequiredMixin, DeleteView):
     model = Post
     template_name = "post_delete.html"
     success_url = reverse_lazy("blog:post-list")
+
+
+def send_email_test(request):
+    send_email.delay()
+    return HttpResponse('<h1>Done Sending Email</h1>')

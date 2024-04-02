@@ -27,6 +27,7 @@ THIRD_PARTY_APPS = [
     "drf_yasg",
     "mail_templated",
     "corsheaders",
+    "django_celery_beat",
 ]
 
 INSTALLED_APPS = [
@@ -196,3 +197,11 @@ CORS_ALLOWED_ORIGINS = [
 
 # CELERY_BROKER_URL
 CELERY_BROKER_URL = "redis://redis:6379/1"
+
+# django celery beat
+# CELERY_BEAT_SCHEDULE = {
+#     'send_email': {
+#         'task': 'blog.tasks.send_email',
+#         'schedule': 5,
+#     }
+# }
