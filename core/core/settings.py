@@ -74,9 +74,13 @@ WSGI_APPLICATION = "core.wsgi.application"
 
 # Database
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': config('DATABASE-NAME', cast=str, default='postgres'),
+        'USER': config('DATABASE-USER', cast=str, default='postgres'),
+        'PASSWORD': config('DATABASE-PASSWORD', cast=str, default='postgres'),
+        'HOST': config('DATABASE-HOST', cast=str, default='database'),
+        'PORT': config('DATABASE-PORT', cast=int, default=5432),
     }
 }
 
@@ -105,7 +109,7 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 STATIC_URL = "/static/"
-STATICFILES_DIRS = [BASE_DIR / "assets"]
+STATICFILES_DIRS = [BASE_DIR / "staticfiles"]
 STATIC_ROOT = BASE_DIR / "static"
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"

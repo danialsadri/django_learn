@@ -20,8 +20,25 @@ services:
       - SECRET_KEY=test
       - DEBUG=True
       - ALLOWED_HOSTS=localhost,127.0.0.1
+      - DATABASE-NAME=postgres
+      - DATABASE-USER=postgres
+      - DATABASE-PASSWORD=postgres
+      - DATABASE-HOST=database
+      - DATABASE-PORT=5432
     depends_on:
       - redis
+      - database
+    restart: always
+
+  database:
+    container_name: database
+    image: postgres
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - database:/var/lib/postgresql/data
     restart: always
 
   redis:
@@ -59,3 +76,6 @@ services:
       - backend
       - redis
     restart: always
+
+volumes:
+  database:
