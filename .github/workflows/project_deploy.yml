@@ -14,7 +14,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Setup Docker-Compose
-        run: docker-compose -f docker-compose-production.yml up --build -d
+        run: docker compose -f docker-compose-production.yml up --build -d
 
 #  Deploy:
 #    if: ${{ always() && contains(join(needs.*.result, ','), 'success') }}
